@@ -1,35 +1,43 @@
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+// Tutorial on how to run with SSL
+// http://stilius.net/java/java_ssl.php
+
 public class Registrar implements Runnable {
     // λίστα που κρατά όλους τους συνδεδεμένους clients στον server κλειδί
-    // το username και object το InOut (in, out, socket)
+    // το username και object το InOut (in, out, ServerSocket)
     private final HashMap<String, InOut> clients = new HashMap<String, InOut>();
-    private ServerSocket socket;
+    private SSLServerSocket ServerSocket;
+
 
     @SuppressWarnings("InfiniteLoopStatement")
     Registrar(int port) throws IOException {
-        // initialize socket server
-        socket = new ServerSocket(port, 50, InetAddress.getByName("0.0.0.0"));
-        System.out.println("Waiting for client on port " + socket.getLocalPort() + " at " + socket.getInetAddress().toString());
+        // initialize ServerSocket server
+        SSLServerSocketFactory sslserversocketfactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        ServerSocket = (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
+        // Ενεργοποίηση του TLS 1.2
+        ServerSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
+        System.out.println("Waiting for client on port " + ServerSocket.getLocalPort() + " at " + ServerSocket.getInetAddress().toString());
 
         // Thread που διαχειρίζεται τους clients
         new Thread(() -> {
             // true για να ακούει πάντα
             while (true) {
                 try {
-                    Socket sock = socket.accept();
+                    SSLSocket sock = (SSLSocket) ServerSocket.accept();
                     System.out.println("Client just connected to " + sock.getRemoteSocketAddress());
-                    // πρόσθεσε το socket σε μια λίστα που θα κρατά τις συνδέσεις
+                    // πρόσθεσε το ServerSocket σε μια λίστα που θα κρατά τις συνδέσεις
                     // πρόσθεσε το input Steam που θα ακούει για μυνήματα από τον client
                     // είναι synchronized επειδή το χρησημοποιούμε και παρακάτω
                     synchronized (clients) {
