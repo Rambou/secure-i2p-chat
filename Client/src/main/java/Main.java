@@ -42,7 +42,7 @@ public class Main {
             System.out.println("Server says " + (String) in.readObject());
 
             ObjectInputStream ino = new ObjectInputStream(inFromServer);
-            HashMap<String, InOut> clients = (HashMap<String, InOut>)ino.readObject();
+            HashMap<String, InOut> clients = (HashMap<String, InOut>) ino.readObject();
 
 
             registrar.close();

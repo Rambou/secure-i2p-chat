@@ -3,7 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class InOut implements java.io.Serializable{
+public class InOut implements java.io.Serializable {
     private DataInputStream in;
     private DataOutputStream out;
     private Socket sock;
