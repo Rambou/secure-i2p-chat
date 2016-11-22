@@ -5,9 +5,9 @@ public class Main {
         // Ξεκίνα τον Registrar Server στην 4000 εκτός και
         // αν ο χρήστης την έχει δώσει ως παράμετρο
         if (args.length == 0) {
-            new Thread(new Registrar(4000)).start();
+            new Registrar(4000);
         } else {
-            new Thread(new Registrar(Integer.valueOf(args[0]))).start();
+            new Registrar(Integer.valueOf(args[0]));
         }
     }
 }
