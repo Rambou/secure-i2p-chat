@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run all clients" type="Multirun" factoryName="Multirun" separateTabs="true" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0">
+    <runConfiguration name="Registar" type="Application" />
     <runConfiguration name="Client" type="Application" />
     <runConfiguration name="Client (1)" type="Application" />
     <runConfiguration name="Client (2)" type="Application" />

@@ -2,32 +2,42 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
     private static InetAddress host;
     private static Integer port;
     private static String i2pUrl;
+    private static String username;
 
     public static void main(String[] args) throws IOException {
-        I2PServer i2pServe = new I2PServer();
-        //παιρνει την I2P διευθυνση από τον I2pserver
-        i2pUrl = i2pServe.getSessionDest();
-        String username = "rambou";
-        Client newClient = new Client(username, i2pUrl);
+
+        host = InetAddress.getByName("0.0.0.0");
+        port = 3000;
 
         // Διαβάζει τις παραμέτρους για την σύνδεση στον registrar
-        if (args.length == 0) {
-            host = InetAddress.getByName("0.0.0.0");
-            port = 3000;
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i].split("=")[0]) {
+                case "host":
+                    host = InetAddress.getByName(String.valueOf(args[i].split("=")[1]));
+                    break;
+                case "port":
+                    port = Integer.valueOf(args[i].split("=")[1]);
+                    break;
+                case "username":
+                    username = String.valueOf(args[i].split("=")[1]);
+                    break;
+                default:
+                    break;
+            }
         }
-        if (args.length == 1) {
-            host = InetAddress.getByName(String.valueOf(args[0]));
-            port = 3000;
-        } else if (args.length == 2) {
-            host = InetAddress.getByName(String.valueOf(args[0]));
-            port = Integer.valueOf(args[1]);
-        }
+
+
+        //I2PServer i2pServe = new I2PServer();
+        //παιρνει την I2P διευθυνση από τον I2pserver
+        //i2pUrl = i2pServe.getSessionDest();
+        i2pUrl = "g";
+        Client newClient = new Client(username, i2pUrl);
 
         // Σύνδεση στον registrar
         // και εγγραφή
@@ -45,15 +55,20 @@ public class Main {
 
             // περιμένει απάντηση από τον server για την εγραφή του
             InputStream inFromServer = registrar.getInputStream();
-            DataInputStream in = new DataInputStream(inFromServer);
-            System.out.println("Server says " + (String) in.readUTF());
+            ObjectInputStream in = new ObjectInputStream(inFromServer);
+            System.out.println("Server says, " + (String) in.readObject());
 
+            Map<String, String> regClients;
             // περιμένει απάντηση από τον server της λίστας των εγγεγραμμένων χρηστών
-            ObjectInputStream ino = new ObjectInputStream(inFromServer);
-            HashMap<String, String> regClients = (HashMap<String, String>) ino.readObject();
-
-            registrar.close();
+            while (true) {
+                Thread.sleep(1000);
+                regClients = (Map<String, String>) in.readObject();
+                System.out.println("Clients are, " + regClients.toString());
+            }
+            //registrar.close();
         } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
