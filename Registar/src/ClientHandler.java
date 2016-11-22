@@ -4,7 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Created by rambou on 22/11/2016.
@@ -16,16 +16,19 @@ public class ClientHandler implements Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private Client client;
-    private HashMap<String, String> registered;
+    private ArrayList<Connection> connections;
     private AlertListener listener = null;
+    private Connection conn;
 
-    public ClientHandler(Socket socket, HashMap<String, String> clients, int id) throws IOException {
+    public ClientHandler(Socket socket, ArrayList<Connection> connections, int id) throws IOException {
         this.sock = socket;
         this.ID = id;
-        this.registered = clients;
         // αρχικοποίηση των streams
         this.in = new ObjectInputStream(sock.getInputStream());
         this.out = new ObjectOutputStream(sock.getOutputStream());
+        this.connections = connections;
+        this.conn = new Connection(in, out, sock);
+        connections.add(conn);
     }
 
     public void addListener(AlertListener listener) {
@@ -35,7 +38,14 @@ public class ClientHandler implements Runnable {
     private void informListener() {
         if (listener != null) {
             // αποστολή στον listener το username αυτού του χρήστη
-            listener.onUserDisconnected(client.getUsername(), sock.getRemoteSocketAddress().toString());
+            listener.onUserDisconnected(client.getUsername(), sock.getRemoteSocketAddress().toString(), conn);
+        }
+    }
+
+    private void userConnected() {
+        if (listener != null) {
+            // αποστολή στον listener το username αυτού του χρήστη
+            listener.onUserConnected(conn);
         }
     }
 
@@ -54,7 +64,7 @@ public class ClientHandler implements Runnable {
                 if (obj instanceof Client) {
                     // προσθήκη του client στην λίστα
                     client = (Client) obj;
-                    registered.put(client.getUsername(), client.getI2pUrl());
+                    conn.setClient(client);
                     System.out.println(client.getUsername() + " registered.");
 
                     // στείλε στον client ότι συνδέθηκε
@@ -62,7 +72,9 @@ public class ClientHandler implements Runnable {
                     out.flush();
 
                     // στείλε στον client την λίστα με τους συνδεμένους χρήστες
-                    sendClientList();
+                    // σε όλους τους χρήστες
+                    userConnected();
+                    //sendClientList();
                 } else if (obj instanceof String) {
                     String message = (String) obj;
                     if (message.contains("GET_CLIENT_LIST")) {
@@ -72,6 +84,7 @@ public class ClientHandler implements Runnable {
                 }
 
             } catch (EOFException | SocketException e) {
+                connections.remove(conn);
                 // αποστολή της καινούργιας λίστας στους υπόλοιπους client
                 // ο χρήστης αποσυνδέθηκε
                 informListener();
@@ -88,7 +101,7 @@ public class ClientHandler implements Runnable {
     }
 
     public void sendClientList() throws IOException {
-        out.writeObject(registered);
+        //out.writeObject(registered);
         out.flush();
     }
 }

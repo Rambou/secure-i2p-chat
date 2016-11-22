@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class Registrar {
     // λίστα που κρατά όλους τους συνδεδεμένους clients στον server κλειδί
     // το username και object το InOut (in, out, ServerSocket)
-    private final ArrayList<SSLSocket> clients = new ArrayList<>();
+    private final ArrayList<Connection> clients = new ArrayList<>();
     private final HashMap<String, String> regClients = new HashMap<>();
     private SSLServerSocket ServerSocket;
     private Integer count = 0;
@@ -35,19 +35,12 @@ public class Registrar {
                     System.out.println("Client just connected to " + sock.getRemoteSocketAddress());
                     // Αρχικοποίηση του Διαχεριστή χρηστών με  το socket του client και
                     // το regClients, μια λίστα που θα κρατά τους συνδεδεμένους χρήστες
-                    ClientHandler ch = new ClientHandler(sock, regClients, ++count);
+                    ClientHandler ch = new ClientHandler(sock, clients, ++count);
                     // Προσθήκη handler ως listener
                     ch.addListener(alert);
                     // Εκκίνηση του νήματος διαχείρισης χρηστών
                     Thread thread = new Thread(ch);
                     thread.start();
-
-                    // πρόσθεσε το ServerSocket σε μια λίστα που θα κρατά τις συνδέσεις
-                    // πρόσθεσε το input Steam που θα ακούει για μυνήματα από τον client
-                    // είναι synchronized επειδή το χρησημοποιούμε και παρακάτω
-                    synchronized (clients) {
-                        clients.add(sock);
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -55,7 +48,7 @@ public class Registrar {
         }).start();
     }
 
-    public ArrayList<SSLSocket> getClients() {
+    public ArrayList<Connection> getClients() {
         return clients;
     }
 
