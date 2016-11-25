@@ -20,7 +20,7 @@ public class I2PServer {
         I2PSession session = manager.getSession();
         //Print the base64 string, the regular string would look like garbage.
         sessionDest = session.getMyDestination().toBase64();
-        System.out.println(session.getMyDestination().toBase64());
+        System.out.println("Connected to i2p with address:" + session.getMyDestination().toBase64());
 
         //Create socket to handle clients
         I2PThread t = new I2PThread(new ClientHandler(serverSocket));

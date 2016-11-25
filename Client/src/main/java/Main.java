@@ -9,12 +9,10 @@ public class Main {
     private static Integer port;
     private static String i2pUrl;
     private static String username;
-    private static Map<String, String> regClients;
     private static Online online;
 
     public static void main(String[] args) throws IOException {
-
-
+        // default τιμές
         host = InetAddress.getByName("0.0.0.0");
         port = 3000;
 
@@ -35,10 +33,16 @@ public class Main {
             }
         }
 
-
-        I2PServer i2pServe = new I2PServer();
-        //παιρνει την I2P διευθυνση από τον I2pserver
-        i2pUrl = i2pServe.getSessionDest();
+        // σύνδεση στο i2p, δημιουργία proxy στην πόρτα που τρέχει ο i2p τοπικά
+        I2PServer i2pServe;
+        try {
+            i2pServe = new I2PServer();
+            //παιρνει την I2P διευθυνση από τον I2pserver
+            i2pUrl = i2pServe.getSessionDest();
+        } catch (Exception e) {
+            System.out.println("Failed to connect to i2p");
+            return;
+        }
         //i2pUrl = "good";
         Client newClient = new Client(username, i2pUrl);
 
@@ -61,16 +65,22 @@ public class Main {
             ObjectInputStream in = new ObjectInputStream(inFromServer);
             System.out.println("Server says, " + (String) in.readObject());
 
+            // λίστα που κρατά όλους τους clients
+            Map<String, String> regClients;
+
+            // εκκίνηση της γραφικής διεπαφής
             startGui();
-            // περιμένει απάντηση από τον server της λίστας των εγγεγραμμένων χρηστών
+
+            // Ανοίγει thread που περιμένει απάντηση από τον server της λίστας των εγγεγραμμένων χρηστών
+            // κάθε φορά που η λίστα ανανεώνεται την λάμβάνει
             while (true) {
+                // διαβάζει για απάντηση κάθε 1000 δευτερόλεπτο
                 Thread.sleep(1000);
                 regClients = (Map<String, String>) in.readObject();
-                System.out.println("Clients are, " + regClients.toString());
+                System.out.println("Connected clients are, " + regClients.toString());
                 online.updateUsers(regClients);
-
             }
-            //registrar.close();
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -81,7 +91,7 @@ public class Main {
     private static void startGui() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                (online = new Online(regClients)).setVisible(true);
+                (online = new Online()).setVisible(true);
             }
         });
     }
