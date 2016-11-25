@@ -9,8 +9,11 @@ public class Main {
     private static Integer port;
     private static String i2pUrl;
     private static String username;
+    private static Map<String, String> regClients;
+    private static Online online;
 
     public static void main(String[] args) throws IOException {
+
 
         host = InetAddress.getByName("0.0.0.0");
         port = 3000;
@@ -33,10 +36,10 @@ public class Main {
         }
 
 
-        //I2PServer i2pServe = new I2PServer();
+        I2PServer i2pServe = new I2PServer();
         //παιρνει την I2P διευθυνση από τον I2pserver
-        //i2pUrl = i2pServe.getSessionDest();
-        i2pUrl = "g";
+        i2pUrl = i2pServe.getSessionDest();
+        //i2pUrl = "good";
         Client newClient = new Client(username, i2pUrl);
 
         // Σύνδεση στον registrar
@@ -58,12 +61,14 @@ public class Main {
             ObjectInputStream in = new ObjectInputStream(inFromServer);
             System.out.println("Server says, " + (String) in.readObject());
 
-            Map<String, String> regClients;
+            startGui();
             // περιμένει απάντηση από τον server της λίστας των εγγεγραμμένων χρηστών
             while (true) {
                 Thread.sleep(1000);
                 regClients = (Map<String, String>) in.readObject();
                 System.out.println("Clients are, " + regClients.toString());
+                online.updateUsers(regClients);
+
             }
             //registrar.close();
         } catch (IOException | ClassNotFoundException e) {
@@ -71,6 +76,14 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void startGui() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                (online = new Online(regClients)).setVisible(true);
+            }
+        });
     }
 
 }
