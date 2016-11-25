@@ -58,7 +58,12 @@ public class Online extends javax.swing.JFrame {
     }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-        String user = online_list.getSelectedValue();
+        this.regClients = regClients;
+        System.out.println();
+        System.out.println(online_list.getSelectedIndex());
+
+        String user = online_list.getSelectedValue().toString();
+        System.out.println(user);
         String i2p_address = regClients.get(user);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -79,7 +84,7 @@ public class Online extends javax.swing.JFrame {
         for (String s : regClients.keySet()) {
             listModel.addElement(s);
         }
-        online_list = new JList(model);
+        online_list.setModel(listModel);
     }
 
 }

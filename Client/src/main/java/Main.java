@@ -75,7 +75,7 @@ public class Main {
             // κάθε φορά που η λίστα ανανεώνεται την λάμβάνει
             while (true) {
                 // διαβάζει για απάντηση κάθε 1000 δευτερόλεπτο
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 regClients = (Map<String, String>) in.readObject();
                 System.out.println("Connected clients are, " + regClients.toString());
                 online.updateUsers(regClients);
