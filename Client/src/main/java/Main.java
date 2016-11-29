@@ -77,7 +77,12 @@ public class Main {
                 // διαβάζει για απάντηση κάθε 1000 δευτερόλεπτο
                 Thread.sleep(2000);
                 regClients = (Map<String, String>) in.readObject();
-                System.out.println("Connected clients are, " + regClients.toString());
+                System.out.println("Connected clients are: ");
+
+                // κώδικας για να ψάχνουμε ένα-ένα τα στοιχεία του hashmap
+                for (Map.Entry<String, String> entry : regClients.entrySet()) {
+                    System.out.println(entry.getKey() + ": " + entry.getValue());
+                }
                 online.updateUsers(regClients);
             }
 

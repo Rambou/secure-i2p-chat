@@ -1,5 +1,5 @@
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by rambou on 22/11/2016.
@@ -45,11 +45,15 @@ public class AlertHandler implements AlertListener {
         }
     }
 
-    private HashMap<String, String> convertToHashMap() {
-        HashMap<String, String> regClients = new HashMap<>();
+    private ConcurrentHashMap<String, String> convertToHashMap() {
+        ConcurrentHashMap<String, String> regClients = new ConcurrentHashMap<>();
 
         for (Connection conn : registrar.getClients()) {
-            regClients.put(conn.getClient().getUsername(), conn.getClient().getI2pUrl());
+            try {
+                regClients.put(conn.getClient().getUsername(), conn.getClient().getI2pUrl());
+            } catch (Exception e) {
+                System.out.println("--failed to catch client--");
+            }
         }
         return regClients;
     }

@@ -3,13 +3,13 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Registrar {
     // λίστα που κρατά όλους τους συνδεδεμένους clients στον server κλειδί
     // το username και object το InOut (in, out, ServerSocket)
     private final ArrayList<Connection> clients = new ArrayList<>();
-    private final HashMap<String, String> regClients = new HashMap<>();
+    private final ConcurrentHashMap<String, String> regClients = new ConcurrentHashMap<>();
     private SSLServerSocket ServerSocket;
     private Integer count = 0;
 
@@ -52,7 +52,7 @@ public class Registrar {
         return clients;
     }
 
-    public HashMap<String, String> getRegClients() {
+    public ConcurrentHashMap<String, String> getRegClients() {
         return regClients;
     }
 
