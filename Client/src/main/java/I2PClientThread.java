@@ -12,6 +12,9 @@ import java.net.NoRouteToHostException;
 class I2PClientThread implements Runnable {
 
     private String destinationString;
+    private I2PSocket socket;
+    private BufferedReader reader;
+    private BufferedWriter writer;
 
     public I2PClientThread(String destinationString) {
         this.destinationString = destinationString;
@@ -28,7 +31,6 @@ class I2PClientThread implements Runnable {
             System.out.println("Destination string incorrectly formatted.");
             return;
         }
-        I2PSocket socket;
         try {
             socket = manager.connect(destination);
         } catch (I2PException ex) {
@@ -44,21 +46,24 @@ class I2PClientThread implements Runnable {
             System.out.println("Sending/receiving was interrupted!");
             return;
         }
-        try {
-            //Write to server
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            bw.write("Hello I2P!\n");
-            //Flush to make sure everything got sent
-            bw.flush();
-            //Read from server
-            BufferedReader br2 = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String s = null;
-            while ((s = br2.readLine()) != null) {
-                System.out.println("Received from server: " + s);
+        while (true) {
+            try {
+                // Write to server - Read from server
+                writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String s = null;
+                while ((s = reader.readLine()) != null) {
+                    System.out.println("Received from server: " + s);
+                }
+            } catch (IOException ex) {
+                System.out.println("Error occurred while sending/receiving!");
             }
-            socket.close();
-        } catch (IOException ex) {
-            System.out.println("Error occurred while sending/receiving!");
         }
+    }
+
+    public void sendMessage(String message) throws IOException {
+        writer.write(message);
+        //Flush to make sure everything got sent
+        writer.flush();
     }
 }

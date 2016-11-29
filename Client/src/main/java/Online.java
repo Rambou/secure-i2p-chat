@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Online extends javax.swing.JFrame {
@@ -58,16 +60,20 @@ public class Online extends javax.swing.JFrame {
     }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-        this.regClients = regClients;
-        System.out.println();
-        System.out.println(online_list.getSelectedIndex());
+        List<ClientI2P> clients = new ArrayList<>();
+        // παίρνει όλους τους επιλεγμένους χρήστες/χρήστη
+        List<String> selectedUser = online_list.getSelectedValuesList();
 
-        String user = online_list.getSelectedValue().toString();
-        System.out.println(user);
-        String i2p_address = regClients.get(user);
+        // για κάθε χρήστη στην λίστα βρίσκει την αντίστοιχη i2p διεύθυνση
+        for (String user : selectedUser) {
+            String i2p_address = regClients.get(user);
+            clients.add(new ClientI2P(user, i2p_address));
+        }
+
+        // δημιουργεί σε νέο thread το chatPanel UI και του δίνει τους χρήστες για chat
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                (new NewJFrame(i2p_address)).setVisible(true);
+                (new ChatPanel(clients)).setVisible(true);
             }
         });
     }

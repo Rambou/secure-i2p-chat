@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by rambou on 22/11/2016.
- */
 public class AlertHandler implements AlertListener {
 
     private Registrar registrar;

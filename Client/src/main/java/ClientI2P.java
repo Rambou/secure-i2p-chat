@@ -1,13 +1,15 @@
 import java.io.Serializable;
 
-public class Client implements Serializable {
+public class ClientI2P implements Serializable {
 
     private String username;
     private String i2pUrl;
+    private I2PClient I2p;
 
-    public Client(String username, String i2pUrl) {
+    public ClientI2P(String username, String i2pUrl) {
         this.username = username;
         this.i2pUrl = i2pUrl;
+        this.I2p = null;
     }
 
     public String getUsername() {
@@ -24,5 +26,13 @@ public class Client implements Serializable {
 
     public void setI2pUrl(String i2pUrl) {
         this.i2pUrl = i2pUrl;
+    }
+
+    public I2PClient getI2p() {
+        return I2p;
+    }
+
+    public void setI2p(I2PClient i2p) {
+        I2p = i2p;
     }
 }

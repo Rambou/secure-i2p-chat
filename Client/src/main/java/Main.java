@@ -43,7 +43,6 @@ public class Main {
             System.out.println("Failed to connect to i2p");
             return;
         }
-        //i2pUrl = "good";
         Client newClient = new Client(username, i2pUrl);
 
         // Σύνδεση στον registrar
@@ -81,6 +80,9 @@ public class Main {
 
                 // κώδικας για να ψάχνουμε ένα-ένα τα στοιχεία του hashmap
                 for (Map.Entry<String, String> entry : regClients.entrySet()) {
+                    if (entry.getKey().equals(username)) {
+                        regClients.remove(entry.getKey());
+                    }
                     System.out.println(entry.getKey() + ": " + entry.getValue());
                 }
                 online.updateUsers(regClients);

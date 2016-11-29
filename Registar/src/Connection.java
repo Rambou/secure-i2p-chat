@@ -3,9 +3,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-/**
- * Created by rambou on 22/11/2016.
- */
 public class Connection {
 
     private ObjectInputStream in;

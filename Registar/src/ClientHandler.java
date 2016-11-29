@@ -6,9 +6,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-/**
- * Created by rambou on 22/11/2016.
- */
 public class ClientHandler implements Runnable {
 
     private Socket sock;
